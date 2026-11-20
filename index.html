@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Happy Anniversary, Sayang ❤️</title>
+
+  <!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans, & Alex Brush -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Dancing+Script:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pearl: '#FFFFFF',
+            champagne: '#EBF9FA',
+            roseSoft: '#CBEFF2',
+            roseGold: '#2EC4B6',
+            roseDeep: '#0D9488',
+            charcoal: '#16323B',
+            mutedInk: '#4A6B75',
+            goldAccent: '#38BDF8',
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            script: ['"Alex Brush"', 'cursive'],
+            letter: ['Georgia', 'serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100dvh;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Strict One-Page View */
+      background-color: #ECFAFB;
+      color: #16323B;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* =========================================================
+       BACKGROUND BENTO-COLLAGE DINAMIS (16 FOTO UKURAN BERVARIASI)
+       Semua 16 foto muat 100% penuh dalam 1 layar tanpa celah kosong
+    ========================================================== */
+    #photoMosaicBg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      gap: 6px;
+      padding: 6px;
+      background: linear-gradient(135deg, #F0FCFD 0%, #D2F3F7 50%, #DCEEFF 100%);
+    }
+
+    @media (min-width: 768px) {
+      #photoMosaicBg {
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: repeat(6, 1fr);
+        gap: 8px;
+        padding: 8px;
+      }
+    }
+
+    .mosaic-tile {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 14px;
+      background-color: #CBEFF2;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.12);
+      cursor: pointer;
+    }
+
+    .mosaic-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+    }
+
+    .mosaic-tile:hover img {
+      transform: scale(1.07);
+      filter: brightness(1.04);
+    }
+
+    /* Cahaya cerah lembut di tepi layar */
+    .soft-glow-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 40%, rgba(203, 239, 242, 0.28) 100%);
+    }
+
+    /* =========================================================
+       KARTU UTAMA ONE-PAGE BRIGHT GLASS
+    ========================================================== */
+    .pearl-glass {
+      background: rgba(255, 255, 255, 0.90);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 1);
+      box-shadow: 0 24px 60px rgba(13, 148, 136, 0.16), 0 6px 20px rgba(22, 50, 59, 0.06);
+    }
+
+    /* Transisi Mode Fokus Foto */
+    #onePageWrapper {
+      transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    body.photo-focus-mode #onePageWrapper {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.96);
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spinSlow 8s linear infinite;
+    }
+
+    /* Custom scrollbar halus untuk area baca surat */
+    .letter-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .letter-scroll::-webkit-scrollbar-track {
+      background: rgba(203, 239, 242, 0.45);
+      border-radius: 9999px;
+    }
+    .letter-scroll::-webkit-scrollbar-thumb {
+      background: rgba(13, 148, 136, 0.45);
+      border-radius: 9999px;
+    }
+
+    /* =========================================================
+       3D FLIP CARD ANIMATION (POP-UP PILIH HADIAH)
+    ========================================================== */
+    .gift-perspective {
+      perspective: 1000px;
+    }
+    .gift-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+    }
+    .gift-card.is-flipped .gift-card-inner {
+      transform: rotateY(180deg);
+    }
+    .gift-card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 1.25rem;
+    }
+    .gift-card-back {
+      transform: rotateY(180deg);
+    }
+    @keyframes revealPop {
+      0% { opacity: 0; transform: scale(0.85) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .gift-card.is-flipped .reveal-content {
+      animation: revealPop 0.55s ease forwards 0.25s;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-roseSoft selection:text-charcoal">
+
+  <!-- =========================================================
+       LAYER 0: FULL-SCREEN ASYMMETRIC BENTO COLLAGE (20 FOTO)
+  ========================================================== -->
+  <div id="photoMosaicBg" aria-label="Kolase 20 Foto Kenangan"></div>
+  <div class="soft-glow-overlay"></div>
+
+  <!-- Layer 60: Partikel Cahaya & Animasi Peluk Virtual (Tampil di depan panel) -->
+  <canvas id="ambientCanvas" class="fixed inset-0 pointer-events-none z-[60]"></canvas>
+
+  <!-- =========================================================
+       LAYER 10: ONE-PAGE VIEW CARD (CENTERED, MOBILE FRIENDLY)
+  ========================================================== -->
+  <main id="onePageWrapper" class="relative z-10 h-[100dvh] w-full flex items-center justify-center p-3.5 sm:p-6">
+    <div class="pearl-glass w-full max-w-[480px] sm:max-w-[580px] rounded-[2rem] p-5 sm:p-8 flex flex-col justify-between max-h-[92dvh]">
+
+      <!-- HEADER RINGKAS & CERAH -->
+      <header class="text-center shrink-0 pb-3 border-b border-roseGold/20">
+        <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-champagne border border-roseGold/35 text-[10px] sm:text-[11px] tracking-[0.14em] text-roseDeep font-semibold">
+          <span>🩵</span>
+          <span id="heroBadgeText">Spesial Buat Kamu</span>
+          <span>🩵</span>
+        </div>
+
+        <h1 class="font-serif text-3xl sm:text-4xl font-semibold text-charcoal tracking-tight mt-2 leading-tight">
+          Happy Anniversary, <span class="italic text-roseDeep font-normal">Sayang.</span> ❤️
+        </h1>
+      </header>
+
+      <!-- ISI SURAT UCAPAN LENGKAP (SCROLLABLE DI DALAM KARTU AGAR TETAP 1 HALAMAN) -->
+      <div class="my-3.5 sm:my-4 flex-1 overflow-y-auto letter-scroll pr-2 pl-1 text-left">
+        <div id="letterBodyDisplay" class="font-letter italic space-y-3.5 text-[15px] sm:text-[16px] text-charcoal leading-[1.75]">
+          <!-- Paragraf ucapan dirender otomatis -->
+        </div>
+      </div>
+
+      <!-- FOOTER AKSI: LIHAT 16 FOTO, PELUK VIRTUAL, PILIH HADIAH & MUSIK -->
+      <footer class="pt-3 border-t border-roseGold/20 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 shrink-0">
+        <button type="button"
+                onclick="togglePhotoFocusMode()"
+                class="flex-1 min-w-[115px] inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full bg-champagne hover:bg-roseSoft/80 text-charcoal border border-roseGold/30 text-xs font-medium transition">
+          <svg class="w-3.5 h-3.5 text-roseDeep shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>Intip Foto</span>
+        </button>
+
+        <button type="button"
+                onclick="triggerHeartBurst(event)"
+                aria-label="Kirim peluk dan cinta"
+                class="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full bg-roseSoft/85 hover:bg-roseSoft text-roseDeep text-xs font-semibold transition">
+          <span>🩵</span>
+          <span class="hidden sm:inline">Peluk Virtual</span>
+        </button>
+
+        <button type="button"
+                onclick="openGiftModal()"
+                aria-label="Pilih hadiah spesial"
+                class="inline-flex items-center justify-center gap-1.5 py-2.5 px-3.5 rounded-full bg-sky-100 hover:bg-sky-200/80 text-sky-800 border border-sky-300/70 text-xs font-semibold transition shadow-sm">
+          <span>🎁</span>
+          <span>Pilih Hadiah</span>
+        </button>
+
+        <button type="button"
+                onclick="toggleMusic()"
+                aria-label="Putar atau jeda lagu"
+                class="inline-flex items-center justify-center gap-1.5 py-2.5 px-3.5 rounded-full bg-roseDeep text-pearl hover:bg-roseGold transition text-xs font-medium shadow-sm">
+          <span id="vinylIcon" class="w-4 h-4 rounded-full bg-pearl/20 flex items-center justify-center text-pearl shrink-0">
+            <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+          </span>
+          <span id="musicStatusText">Putar Lagu</span>
+        </button>
+      </footer>
+
+    </div>
+  </main>
+
+  <audio id="bgAudio" loop preload="none"></audio>
+
+  <!-- Floating Bar saat Mode Fokus Foto Aktif -->
+  <div id="photoFocusBar" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 hidden items-center gap-3 px-5 py-2.5 rounded-full pearl-glass shadow-xl">
+    <span class="text-xs font-medium text-charcoal">Sentuh fotonya kalau mau lihat lebih dekat ✨</span>
+    <button type="button"
+            onclick="togglePhotoFocusMode()"
+            class="px-3.5 py-1.5 rounded-full bg-roseDeep text-pearl text-xs font-semibold hover:bg-roseGold transition">
+      Baca Surat Lagi
+    </button>
+  </div>
+
+  <!-- Lightbox Modal untuk Memperbesar Foto -->
+  <div id="photoLightbox"
+       class="fixed inset-0 z-50 hidden bg-charcoal/80 backdrop-blur-md flex items-center justify-center p-4"
+       onclick="closeLightbox()">
+    <div class="relative max-w-lg w-full pearl-glass rounded-3xl p-3 sm:p-4 text-center shadow-2xl" onclick="event.stopPropagation()">
+      <button type="button"
+              onclick="closeLightbox()"
+              aria-label="Tutup foto"
+              class="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-roseDeep text-pearl shadow-md flex items-center justify-center text-lg font-bold hover:bg-roseGold transition">
+        &times;
+      </button>
+      <img id="lightboxImg" src="" alt="Kenangan Kita" class="w-full max-h-[70dvh] object-contain rounded-2xl bg-champagne" />
+      <p id="lightboxCaption" class="font-letter italic text-sm sm:text-base text-charcoal mt-3 px-2"></p>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       POP-UP MODAL PILIH HADIAH (KARTU TERBALIK 3D)
+  ========================================================== -->
+  <div id="giftModal"
+       class="fixed inset-0 z-50 hidden bg-charcoal/70 backdrop-blur-md flex items-center justify-center p-4"
+       onclick="closeGiftModal()">
+    <div class="pearl-glass w-full max-w-md sm:max-w-xl rounded-[2rem] p-5 sm:p-7 relative text-center shadow-2xl"
+         onclick="event.stopPropagation()">
+
+      <button type="button"
+              onclick="closeGiftModal()"
+              aria-label="Tutup pilihan hadiah"
+              class="absolute top-4 right-4 w-8 h-8 rounded-full bg-champagne hover:bg-roseSoft text-charcoal flex items-center justify-center text-lg leading-none transition">
+        &times;
+      </button>
+
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-champagne border border-roseGold/35 text-[11px] font-semibold text-roseDeep">
+        <span>✨</span>
+        <span>Kejutan Spesial Untukmu</span>
+        <span>✨</span>
+      </div>
+
+      <h2 class="font-serif text-2xl sm:text-3xl font-semibold text-charcoal mt-2">
+        Pilih Satu Kartu Hadiah, <span class="italic text-roseDeep font-normal">Sayang</span> 🎁
+      </h2>
+      <p id="giftInstructionText" class="text-xs sm:text-sm text-mutedInk mt-1">
+        Sentuh salah satu kartu tertutup di bawah ini untuk membuka hadiahmu!
+      </p>
+
+      <!-- Grid Kartu Hadiah Terbalik -->
+      <div id="giftCardsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mt-4 sm:mt-5 max-h-[62dvh] overflow-y-auto letter-scroll pr-1">
+        <!-- Kartu dirender otomatis oleh JavaScript -->
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-roseGold/20 flex items-center justify-between gap-2">
+        <button type="button"
+                onclick="resetGiftCards()"
+                class="text-xs text-mutedInk hover:text-roseDeep font-medium underline underline-offset-4 transition">
+          Acak Ulang Kartu
+        </button>
+        <button type="button"
+                onclick="closeGiftModal()"
+                class="px-4 py-2 rounded-full bg-roseDeep text-pearl hover:bg-roseGold text-xs font-medium transition">
+          Selesai
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       KONFIGURASI UTAMA (EDIT TEKS, MUSIK, & 20 FOTO DI SINI)
+  ========================================================== -->
+  <script>
+    const CONFIG = {
+      badgeAtas: "Untuk Istriku Tercinta",
+      fileMusik: "musik.mp3", // Upload lagu pilihanmu ke GitHub dengan nama musik.mp3 (sejajar dengan index.html)
+
+      // ISI UCAPAN LENGKAP
+      isiUcapan: [
+        "Happy Anniversary, Sayang. ❤️",
+        "Nggak terasa ya, kita sudah sampai di titik ini. Terima kasih sudah menemani dan menjalani banyak hal bersamaku sampai hari ini.",
+        "Selama kita bersama, banyak hal yang sudah kita lewati dan pelajari. Kita terus belajar memahami satu sama lain, saling melengkapi, dan menjadi lebih baik. Aku sadar masih banyak kekuranganku sebagai suami, dan aku ingin terus memperbaiki diri agar bisa menjadi pasangan yang lebih baik untukmu.",
+        "Mungkin aku nggak selalu pandai menunjukkan rasa sayang atau mengungkapkan apa yang aku rasakan. Tapi aku benar-benar menghargai semua yang sudah kamu lakukan selama ini. Terima kasih sudah menjadi istri yang selalu berusaha memberikan yang terbaik, dan menjadi ibu yang luar biasa untuk anak kita. Terima kasih untuk semua waktu, tenaga, perhatian, kesabaran, dan pengorbananmu. Aku tahu ada banyak hal yang kamu kesampingkan demi keluarga kecil kita, dan aku sangat menghargai itu.",
+        "Semoga ke depannya aku bisa menjadi suami yang lebih baik, lebih peka, dan lebih mengerti kamu. Aku ingin kita terus tumbuh bersama, menikmati setiap proses membesarkan anak kita, dan menjalani lebih banyak cerita kehidupan bersama.",
+        "Terima kasih sudah menjadi teman hidupku. Aku bersyukur bisa menjalani semua ini bersamamu. Semoga masih banyak tahun dan kebahagiaan yang bisa kita lalui bersama.",
+        "Happy Anniversary, Sayang. I love you. ❤️"
+      ],
+
+      // 6 PILIHAN HADIAH TERSEMBUNYI (DIACAK SETIAP POP-UP DIBUKA)
+      daftarHadiah: [
+        {
+          ikon: "💵",
+          judul: "Uang Cash",
+          deskripsi: "Uang jajan tambahan buat sayang belanja apa pun yang sayang mau!"
+        },
+        {
+          ikon: "💳",
+          judul: "Gift Card",
+          deskripsi: "Voucher belanja spesial khusus buat memanjakan sayang."
+        },
+        {
+          ikon: "🍽️",
+          judul: "Dinner Bertiga",
+          deskripsi: "Makan malam romantis bertiga, tempatnya sayang yang pilih sendiri!"
+        },
+        {
+          ikon: "🫂",
+          judul: "Bercinta & Pelukan Sepanjang Malam",
+          deskripsi: "Malam penuh cinta, kehangatan, dan pelukan erat khusus untuk sayang."
+        },
+        {
+          ikon: "🌴",
+          judul: "1 Hari Libur Penuh",
+          deskripsi: "Sayang bebas istirahat seharian! Arfa aku yang urus (kecuali nenen 😄)."
+        },
+        {
+          ikon: "💆‍♀️",
+          judul: "Spa & Pijit Gratis",
+          deskripsi: "Sesi relaksasi spa dan pijit biar badan sayang segar kembali."
+        }
+      ],
+
+      // 20 FOTO BACKGROUND (Taruh file foto di folder 'foto/' dengan nama 1.jpg s/d 20.jpg)
+      fotos: [
+        { src: "foto/1.jpg", caption: "Momen manis kita bersama 🩵" },
+        { src: "foto/2.jpg", caption: "Senyum favoritku setiap hari ✨" },
+        { src: "foto/3.jpg", caption: "Langkah kecil menuju cerita besar kita" },
+        { src: "foto/4.jpg", caption: "Terima kasih selalu ada di sampingku" },
+        { src: "foto/5.jpg", caption: "Tawa sederhana yang paling kurindukan" },
+        { src: "foto/6.jpg", caption: "Perjalanan indah bersamamu" },
+        { src: "foto/7.jpg", caption: "Setiap detik bersamamu selalu berarti" },
+        { src: "foto/8.jpg", caption: "Rumah terbaikku adalah kamu" },
+        { src: "foto/9.jpg", caption: "Keluarga kecil kita yang selalu kubanggakan" },
+        { src: "foto/10.jpg", caption: "Kebahagiaan sederhana kita" },
+        { src: "foto/11.jpg", caption: "Selalu bersyukur memilikimu" },
+        { src: "foto/12.jpg", caption: "Cerita hangat di setiap hari" },
+        { src: "foto/13.jpg", caption: "Bersamamu semua terasa lebih mudah" },
+        { src: "foto/14.jpg", caption: "Kenangan yang tak akan pernah pudar" },
+        { src: "foto/15.jpg", caption: "Saling menguatkan di setiap keadaan" },
+        { src: "foto/16.jpg", caption: "Istri dan ibu terbaik untuk keluarga kita" },
+        { src: "foto/17.jpg", caption: "Cinta yang terus tumbuh setiap tahunnya" },
+        { src: "foto/18.jpg", caption: "Menikmati setiap proses bersama" },
+        { src: "foto/19.jpg", caption: "Harapan dan doa terbaik untuk kita" },
+        { src: "foto/20.jpg", caption: "Happy Anniversary, Sayang. I love you ❤️" }
+      ]
+    };
+
+    // Pola ukuran asimetris untuk 20 foto agar mengisi penuh layar tanpa celah kosong
+    // Desktop: 10 kolom x 6 baris = 60 sel | Mobile: 6 kolom x 8 baris = 48 sel
+    const TILE_SPANS = [
+      "col-span-2 row-span-2 md:col-span-2 md:row-span-2", // 1 (4 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-1", // 2 (2 | 2)
+      "col-span-2 row-span-2 md:col-span-2 md:row-span-2", // 3 (4 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-2", // 4 (2 | 4)
+      "col-span-1 row-span-1 md:col-span-2 md:row-span-1", // 5 (1 | 2)
+      "col-span-1 row-span-1 md:col-span-2 md:row-span-1", // 6 (1 | 2)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-2", // 7 (2 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-1", // 8 (2 | 2)
+      "col-span-2 row-span-2 md:col-span-2 md:row-span-2", // 9 (4 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-1", // 10 (2 | 2)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-2", // 11 (2 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-1", // 12 (2 | 2)
+      "col-span-2 row-span-2 md:col-span-2 md:row-span-2", // 13 (4 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-2", // 14 (2 | 4)
+      "col-span-1 row-span-1 md:col-span-2 md:row-span-1", // 15 (1 | 2)
+      "col-span-1 row-span-1 md:col-span-2 md:row-span-1", // 16 (1 | 2)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-2", // 17 (2 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-2", // 18 (2 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-2", // 19 (2 | 4)
+      "col-span-2 row-span-1 md:col-span-2 md:row-span-2"  // 20 (2 | 4)
+    ];
+
+    function createPlaceholderSVG(index) {
+      const palettes = [
+        ["#E0F7FA", "#0D9488"],
+        ["#E0F2FE", "#0284C7"],
+        ["#CCFBF1", "#0F766E"],
+        ["#F0FDFA", "#14B8A6"]
+      ];
+      const [bg, fg] = palettes[index % palettes.length];
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'>
+        <rect width='600' height='600' fill='${bg}'/>
+        <circle cx='300' cy='260' r='55' fill='${fg}' fill-opacity='0.14'/>
+        <text x='50%' y='46%' dominant-baseline='middle' text-anchor='middle' font-size='44'>🩵</text>
+        <text x='50%' y='58%' dominant-baseline='middle' text-anchor='middle' font-family='Georgia, serif' font-style='italic' font-size='26' fill='${fg}'>Foto Kita #${index + 1}</text>
+      </svg>`;
+      return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    }
+
+    function initContent() {
+      document.getElementById("heroBadgeText").textContent = CONFIG.badgeAtas;
+
+      const letterContainer = document.getElementById("letterBodyDisplay");
+      letterContainer.innerHTML = "";
+      CONFIG.isiUcapan.forEach((paragraf, idx) => {
+        const p = document.createElement("p");
+        p.textContent = paragraf;
+        if (idx === 0 || idx === CONFIG.isiUcapan.length - 1) {
+          p.className = "font-semibold text-roseDeep text-[16px] sm:text-[17px]";
+        }
+        letterContainer.appendChild(p);
+      });
+    }
+
+    function renderBackgroundMosaic() {
+      const container = document.getElementById("photoMosaicBg");
+      container.innerHTML = "";
+
+      CONFIG.fotos.forEach((item, index) => {
+        const tile = document.createElement("div");
+        tile.className = `mosaic-tile ${TILE_SPANS[index] || "col-span-2 row-span-1"}`;
+
+        const img = document.createElement("img");
+        const basePath = item.src.replace(/\.[^/.]+$/, "");
+        const candidateExts = [".jpg", ".JPG", ".jpeg", ".JPEG", ".png", ".PNG"];
+        let extAttempt = 0;
+
+        img.src = basePath + candidateExts[extAttempt];
+        img.alt = item.caption || `Foto Kenangan ${index + 1}`;
+        img.onerror = function () {
+          extAttempt++;
+          if (extAttempt < candidateExts.length) {
+            this.src = basePath + candidateExts[extAttempt];
+          } else {
+            this.onerror = null;
+            this.src = createPlaceholderSVG(index);
+          }
+        };
+
+        tile.appendChild(img);
+        tile.addEventListener("click", () => {
+          openLightbox(img.src, item.caption || `Foto Kita #${index + 1}`);
+        });
+
+        container.appendChild(tile);
+      });
+    }
+
+    /* =========================================================
+       MODE INTIP FOTO & LIGHTBOX
+    ========================================================== */
+    function togglePhotoFocusMode() {
+      const isFocus = document.body.classList.toggle("photo-focus-mode");
+      const bar = document.getElementById("photoFocusBar");
+      if (isFocus) {
+        bar.classList.remove("hidden");
+        bar.classList.add("flex");
+      } else {
+        bar.classList.add("hidden");
+        bar.classList.remove("flex");
+      }
+    }
+
+    function openLightbox(src, caption) {
+      const modal = document.getElementById("photoLightbox");
+      document.getElementById("lightboxImg").src = src;
+      document.getElementById("lightboxCaption").textContent = caption;
+      modal.classList.remove("hidden");
+    }
+
+    function closeLightbox() {
+      document.getElementById("photoLightbox").classList.add("hidden");
+    }
+
+    /* =========================================================
+       POP-UP PILIH HADIAH (KARTU PORTRAIT TERBALIK & ACAK)
+    ========================================================== */
+    let hasRevealedGift = false;
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function renderGiftCards() {
+      hasRevealedGift = false;
+      const grid = document.getElementById("giftCardsGrid");
+      const instruction = document.getElementById("giftInstructionText");
+      instruction.textContent = "Sentuh salah satu kartu tertutup di bawah ini untuk membuka hadiahmu!";
+      grid.innerHTML = "";
+
+      const shuffledGifts = shuffleArray(CONFIG.daftarHadiah);
+
+      shuffledGifts.forEach((hadiah, idx) => {
+        const cardWrapper = document.createElement("div");
+        cardWrapper.className = "gift-card gift-perspective aspect-[3/4] w-full cursor-pointer select-none";
+
+        cardWrapper.innerHTML = `
+          <div class="gift-card-inner shadow-md">
+            <!-- Sisi Depan (Tertutup) -->
+            <div class="gift-card-face bg-gradient-to-br from-roseDeep via-roseGold to-sky-400 text-pearl p-3 flex flex-col items-center justify-center border-2 border-white/80 shadow-inner">
+              <div class="w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl mb-2 shadow-sm">
+                🎁
+              </div>
+              <span class="font-letter italic text-sm sm:text-base font-semibold tracking-wide">Kartu #${idx + 1}</span>
+              <span class="text-[10px] sm:text-[11px] text-white/90 mt-1">Ketuk untuk buka</span>
+            </div>
+
+            <!-- Sisi Belakang (Terbuka / Isi Hadiah) -->
+            <div class="gift-card-face gift-card-back bg-gradient-to-b from-white to-champagne text-charcoal p-3 sm:p-4 flex flex-col items-center justify-center border-2 border-roseGold/50 text-center">
+              <div class="reveal-content opacity-0 flex flex-col items-center justify-center h-full">
+                <span class="text-2xl sm:text-3xl mb-1.5">${hadiah.ikon}</span>
+                <h3 class="font-letter italic font-bold text-sm sm:text-base text-roseDeep leading-snug">
+                  ${hadiah.judul}
+                </h3>
+                <p class="font-letter italic text-[11px] sm:text-xs text-charcoal/90 mt-1.5 leading-relaxed">
+                  ${hadiah.deskripsi}
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+
+        cardWrapper.addEventListener("click", (e) => {
+          if (cardWrapper.classList.contains("is-flipped")) return;
+
+          cardWrapper.classList.add("is-flipped");
+          triggerHeartBurst(e);
+
+          if (!hasRevealedGift) {
+            hasRevealedGift = true;
+            instruction.textContent = "Yeay! Ini hadiah spesial untuk sayang 🎉 (Bisa buka kartu lain juga kalau penasaran 😄)";
+          }
+        });
+
+        grid.appendChild(cardWrapper);
+      });
+    }
+
+    function openGiftModal() {
+      renderGiftCards(); // Otomatis teracak setiap kali pop-up dibuka
+      document.getElementById("giftModal").classList.remove("hidden");
+    }
+
+    function closeGiftModal() {
+      document.getElementById("giftModal").classList.add("hidden");
+    }
+
+    function resetGiftCards() {
+      renderGiftCards();
+    }
+
+    /* =========================================================
+       AUDIO / MUSIK LATAR (MP3 CUSTOM ATAU PIANO LEMBUT BAWAAN)
+    ========================================================== */
+    let isPlaying = false;
+    let audioCtx = null;
+    let pianoTimer = null;
+    let usingFallbackPiano = false;
+
+    function playSoftPianoLoop() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+
+      // Melodi lembut romantis (C major / A minor / F major / G major)
+      const chords = [
+        [261.63, 329.63, 392.00, 493.88],
+        [220.00, 261.63, 329.63, 392.00],
+        [174.61, 220.00, 261.63, 349.23],
+        [196.00, 246.94, 293.66, 392.00]
+      ];
+      let step = 0;
+
+      const playStep = () => {
+        if (!isPlaying || !usingFallbackPiano) return;
+        const chord = chords[step % chords.length];
+        const now = audioCtx.currentTime;
+
+        chord.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, now + i * 0.25);
+
+          gain.gain.setValueAtTime(0.0001, now + i * 0.25);
+          gain.gain.exponentialRampToValueAtTime(0.035, now + i * 0.25 + 0.15);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.25 + 2.4);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + i * 0.25);
+          osc.stop(now + i * 0.25 + 2.5);
+        });
+
+        step++;
+        pianoTimer = setTimeout(playStep, 2600);
+      };
+
+      playStep();
+    }
+
+    function stopSoftPianoLoop() {
+      if (pianoTimer) {
+        clearTimeout(pianoTimer);
+        pianoTimer = null;
+      }
+    }
+
+    function updateMusicUI(playing) {
+      const icon = document.getElementById("vinylIcon");
+      const text = document.getElementById("musicStatusText");
+      if (playing) {
+        icon.classList.add("animate-spin-slow");
+        text.textContent = "Jeda Lagu";
+      } else {
+        icon.classList.remove("animate-spin-slow");
+        text.textContent = "Putar Lagu";
+      }
+    }
+
+    function toggleMusic() {
+      const audioEl = document.getElementById("bgAudio");
+
+      if (isPlaying) {
+        isPlaying = false;
+        audioEl.pause();
+        stopSoftPianoLoop();
+        updateMusicUI(false);
+        return;
+      }
+
+      isPlaying = true;
+      updateMusicUI(true);
+
+      if (!usingFallbackPiano && CONFIG.fileMusik) {
+        if (!audioEl.src) {
+          audioEl.src = CONFIG.fileMusik;
+        }
+        audioEl.play().catch(() => {
+          usingFallbackPiano = true;
+          playSoftPianoLoop();
+        });
+      } else {
+        usingFallbackPiano = true;
+        playSoftPianoLoop();
+      }
+    }
+
+    /* =========================================================
+       ANIMASI PELUK VIRTUAL & PARTIKEL CAHAYA AMBIENT
+    ========================================================== */
+    const particles = [];
+
+    function triggerHeartBurst(event) {
+      let x = window.innerWidth / 2;
+      let y = window.innerHeight / 2;
+
+      if (event && event.currentTarget && event.currentTarget.getBoundingClientRect) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      } else if (event && event.clientX) {
+        x = event.clientX;
+        y = event.clientY;
+      }
+
+      const emojis = ["🩵", "❤️", "✨", "💙", "🤍", "🫂"];
+
+      for (let i = 0; i < 24; i++) {
+        const angle = (Math.PI * 2 * i) / 24 + (Math.random() - 0.5) * 0.4;
+        const speed = 2.6 + Math.random() * 4.8;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 2.2,
+          alpha: 1,
+          size: 20 + Math.random() * 14,
+          emoji: emojis[i % emojis.length],
+          burst: true
+        });
+      }
+    }
+
+    function initAmbientCanvas() {
+      const canvas = document.getElementById("ambientCanvas");
+      const ctx = canvas.getContext("2d");
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
+      // Partikel cahaya mengambang lembut
+      for (let i = 0; i < 24; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: -0.25 - Math.random() * 0.45,
+          alpha: 0.25 + Math.random() * 0.4,
+          size: 2.5 + Math.random() * 3.5,
+          burst: false
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.burst) {
+            p.vy += 0.06;
+            p.alpha -= 0.016;
+            if (p.alpha <= 0) {
+              particles.splice(i, 1);
+              continue;
+            }
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.font = `${p.size}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.fillText(p.emoji, p.x, p.y);
+            ctx.restore();
+          } else {
+            if (p.y < -10) {
+              p.y = canvas.height + 10;
+              p.x = Math.random() * canvas.width;
+            }
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.fillStyle = "#FFFFFF";
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initContent();
+      renderBackgroundMosaic();
+      initAmbientCanvas();
+    });
+  </script>
+</body>
+</html>
